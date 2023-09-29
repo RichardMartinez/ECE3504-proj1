@@ -26,6 +26,7 @@
 # $s0 = base address of operator string
 # $s1 = firstInt
 # $s2 = secondInt
+# $s3 = result
 
 # Start of Data Segment
 # All static data is stored here
@@ -95,7 +96,10 @@ main:
 	# Test if operator is add
 	li $t0, 0x2b  # Ascii Code for '+'
 	bne $s0, $t0, skipAdd  # If $s0 != $t0, skip jal
+	move $a0, $s1
+	move $a1, $s2
 	jal calcAdd
+	move $s3, $v0
 skipAdd:
 	
 	# Pull $ra from stack
