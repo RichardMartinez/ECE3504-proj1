@@ -112,6 +112,16 @@ skipAdd:
 	jal calcSub
 	move $s3, $v0
 skipSub:
+
+	# Test if operator is mul
+	li $t0, 0x2a
+	bne $s0, $t0, skipMul # If $s0 != $t0, skip jal
+	# At this point, we know the operation is mul
+	move $a0, $s1
+	move $a1, $s2
+	jal calcMul
+	move $s3, $v0
+skipMul:
 	
 	# Pull $ra from stack
 	lw $ra, 0($sp)
@@ -172,6 +182,16 @@ calcAdd:
 calcSub:
 	# TODO: Should this be subu?
 	sub $v0, $a0, $a1
+	
+	# Return
+	jr $ra
+
+# calcMul function
+# Param: $a0 = a
+# Param: $a1 = b
+# Return: $v0 = a * b
+calcMul:
+	mul $v0, $a0, $a1
 	
 	# Return
 	jr $ra
