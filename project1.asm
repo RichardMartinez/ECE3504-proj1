@@ -24,10 +24,17 @@
 # Start of Data Segment
 # All static data is stored here
 	.data
+# Strings
 requestNumber1: 	.asciiz "Enter first number: "
 requestOperator: 	.asciiz "Enter operator: "
 requestNumber2: 	.asciiz "Enter second number: "
 newLine:			.asciiz "\n"
+
+# Ascii Codes for Possible Operators
+addOperator:		.word 0x2b
+subOperator:		.word 0x2d
+mulOperator:		.word 0x2a
+divOperator:		.word 0x2f
 
 operatorBuffer:
 # Align this with the next possible word
@@ -80,6 +87,11 @@ main:
 	
 	# Dereference the address for the operator to get the ascii code
 	lw $s0, 0($s0)
+	
+	# AT THIS POINT:
+	# $s0 = ascii code for operator char
+	# $s1 = firstInt
+	# $s2 = secondInt
 	
 	# Pull $ra from stack
 	lw $ra, 0($sp)
