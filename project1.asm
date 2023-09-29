@@ -17,17 +17,25 @@
 # TODO: continue psuedo-code description
 
 # TODO: register assignments
+# $s0 = base address of operator string
+# $s1 = firstInt
+# $s2 = secondInt
 
 # Start of Data Segment
 # All static data is stored here
 	.data
-requestNumber1: .asciiz "Enter first number: "
-requestOperator: .asciiz "Enter operator: "
-requestNumber2: .asciiz "Enter second number: "
+requestNumber1: 	.asciiz "Enter first number: "
+requestOperator: 	.asciiz "Enter operator: "
+requestNumber2: 	.asciiz "Enter second number: "
+newLine:			.asciiz "\n"
 
+operatorBuffer:
+# Align this with the next possible word
+# so we can deference the address using lw without an exception
+.align 2
 # Allocate one byte of space for the operator char
 # Plus one byte for the null terminator
-operatorBuffer: .space 2
+.space 2
 
 # Start of Text Segment
 	.text
@@ -44,19 +52,34 @@ main:
 	la $a0, requestNumber1
 	jal printString
 	
-	# Read firstInt from console into $s0	
+	# Read firstInt from console into $s1
 	jal readInt
-	move $s0, $v0
+	move $s1, $v0
 	
 	# Print operator request string to console
 	la $a0, requestOperator
 	jal printString
 	
-	# Read operator char from console
+	# Read operator char from console into $s0
 	la $a0, operatorBuffer	# Where to place return string
 	li $a1, 2				# Size of string
 	jal readString
-	move $s1, $a0
+	move $s0, $a0
+	
+	# Print new line for clarity
+	la $a0, newLine
+	jal printString
+	
+	# Print secondInt request string to console
+	la $a0, requestNumber2
+	jal printString
+	
+	# Read secondInt from console into $s2
+	jal readInt
+	move $s2, $v0
+	
+	# Dereference the address for the operator to get the ascii code
+	lw $s0, 0($s0)
 	
 	# Pull $ra from stack
 	lw $ra, 0($sp)
@@ -91,7 +114,7 @@ printString:
 # Read String function
 # syscall 8 = read_string
 # Param: $a0 = buffer to place result into
-# Param: $a1 = length of string to read
+# Param: $a1 = length of string to read (remember to include null terminator)
 # Return: $a0 = base address of string
 readString:
 	li $v0, 8
