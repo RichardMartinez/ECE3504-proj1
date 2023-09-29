@@ -6,11 +6,13 @@
 # Date: September 28, 2023
 
 ### REGISTER ASSIGNMENTS
-# $s0 = base address of operator string
+# $s0 = operator string
 # $s1 = firstInt
 # $s2 = secondInt
 # $s3 = result
 # $t0 = temp register for testing equality
+# $v0 = return value from functions
+# $a0, $a1 = parameters to functions
 
 ### PSUEDO-CODE DESCRIPTION:
 ## INPUT PHASE:
