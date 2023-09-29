@@ -1,14 +1,25 @@
 # ECE 3504 Principles of Computer Architecture
 # Project 1: ISA Calculator
 # Richard Martinez
-# Version: 1
-# Date: September 27, 2023
+# Version: 	1 - 9.27.2023: Read firstInt
+#			2 - 9.28.2023: TODO
+# Date: September 28, 2023
 
-# TODO: A psuedo-code description
+### PSUEDO-CODE DESCRIPTION:
+## INPUT PHASE:
+# Print requestNumber1 string to console
+# Read firstInt integer from console
+# Print requestOperator string to console
+# Read operator string from console
+# Print requestNumber2 string to console
+# Read secondInt integer from console
+## CALCULATION PHASE:
+# TODO: continue psuedo-code description
 
 # TODO: register assignments
 
 # Start of Data Segment
+# All static data is stored here
 	.data
 requestNumber1: .asciiz "Enter first number: "
 requestOperator: .asciiz "Enter operator: "
@@ -25,13 +36,17 @@ main:
 	addi $sp, $sp, -4
 	sw $ra, 0($sp)
 	
-	# Print first request string to console
+	# Print firstInt request string to console
 	la $a0, requestNumber1
 	jal printString
 	
 	# Read firstInt from console into $s0	
 	jal readInt
 	move $s0, $v0
+	
+	# Print operator request string to console
+	la $a0, requestOperator
+	jal printString
 	
 	# Pull $ra from stack
 	lw $ra, 0($sp)
