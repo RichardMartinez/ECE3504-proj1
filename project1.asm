@@ -2,19 +2,34 @@
 # Project 1: ISA Calculator
 # Richard Martinez
 # Version: 	1 - 9.27.2023: Read firstInt
-#			2 - 9.28.2023: TODO
+#			2 - 9.28.2023: Finish Project 1
 # Date: September 28, 2023
+
+### REGISTER ASSIGNMENTS
+# $s0 = base address of operator string
+# $s1 = firstInt
+# $s2 = secondInt
+# $s3 = result
+# $t0 = temp register for testing equality
 
 ### PSUEDO-CODE DESCRIPTION:
 ## INPUT PHASE:
-# Print requestNumber1 string to console
-# Read firstInt integer from console
-# Print requestOperator string to console
+# Ask user for first integer
+# Read first integer from console
+# Ask user for operator string
 # Read operator string from console
-# Print requestNumber2 string to console
-# Read secondInt integer from console
+# Ask user for second integer
+# Read second integer from console
 ## CALCULATION PHASE:
-# TODO: continue psuedo-code description
+# If operation == add: call add function
+# If operation == sub: call sub function
+# If operation == mul: call mul function
+# If operation == div: call div function
+## DISPLAY PHASE:
+# Display result in the console
+# Ask user if they want to exit
+# If 'n': restart
+# Else: exit
 
 # Ascii Codes for Possible Operators
 # '+' = 0x2b
@@ -22,19 +37,15 @@
 # '*' = 0x2a
 # '/' = 0x2f
 
-# TODO: register assignments
-# $s0 = base address of operator string
-# $s1 = firstInt
-# $s2 = secondInt
-# $s3 = result
-
-# Start of Data Segment
+### DATA SEGMENT
 # All static data is stored here
 	.data
 requestNumber1: 	.asciiz "Enter first number: "
 requestOperator: 	.asciiz "Enter operator: "
 requestNumber2: 	.asciiz "Enter second number: "
 displayResult:		.asciiz "Calculated result: "
+requestExit:		.asciiz "Do you want to exit? "
+thankYou:			.asciiz "Thank you!"
 newLine:			.asciiz "\n"
 
 operatorBuffer:
@@ -45,7 +56,12 @@ operatorBuffer:
 # Plus one byte for the null terminator
 .space 2
 
-# Start of Text Segment
+userExitBuffer:
+# Same reasoning as operatorBuffer
+.align 2
+.space 2
+
+### TEXT SEGMENT
 	.text
 	.globl main
 	
@@ -56,7 +72,9 @@ main:
 	addi $sp, $sp, -4
 	sw $ra, 0($sp)
 	
+	### START INPUT PHASE
 	# Print firstInt request string to console
+restartMain:
 	la $a0, requestNumber1
 	jal printString
 	
@@ -94,6 +112,7 @@ main:
 	# $s1 = firstInt
 	# $s2 = secondInt
 	
+	### START CALCULATION PHASE
 	# Test if operator is add
 	li $t0, 0x2b  # Ascii Code for '+'
 	bne $s0, $t0, skipAdd  # If $s0 != $t0, skip jal
@@ -137,12 +156,55 @@ skipDiv:
 	# AT THIS POINT:
 	# $s3 = Result
 	
+	### START DISPLAY PHASE
 	# Display result on screen
 	la $a0, displayResult
 	jal printString
 	move $a0, $s3
 	jal printInt
 	
+	# Print new line for clarity
+	la $a0, newLine
+	jal printString
+	
+	# Ask user if they want to exit
+	la $a0, requestExit
+	jal printString
+	
+	# Read exit char from console into $t0
+	la $a0, userExitBuffer	# Where to place return string
+	li $a1, 2			   	# Size of string
+	jal readString
+	move $t0, $a0
+	lw $t0, 0($t0)  # Now $t0 = ascii code for exit char
+	
+	# Test if exit char == 'n' or 'N'
+	li $t1, 0x6e  # ascii 'n'
+	beq $t0, $t1, exitCharN
+	li $t1, 0x4e  # ascii 'N'
+	beq $t0, $t1, exitCharN
+	
+	# At this point, we know exit char is not N
+	j exitCharY
+
+exitCharN:
+	# At this point, we know exit char == 'n' or 'N'
+	# Print new line for clarity
+	la $a0, newLine
+	jal printString
+	
+	# Restart main
+	j restartMain
+
+exitCharY:
+	# Print new line for clarity
+	la $a0, newLine
+	jal printString
+	
+	# Thank the user and exit
+	la $a0, thankYou
+	jal printString
+
 	# Pull $ra from stack
 	lw $ra, 0($sp)
 	addi $sp, $sp, 4
