@@ -16,6 +16,12 @@
 ## CALCULATION PHASE:
 # TODO: continue psuedo-code description
 
+# Ascii Codes for Possible Operators
+# '+' = 0x2b
+# '-' = 0x2d
+# '*' = 0x2a
+# '/' = 0x2f
+
 # TODO: register assignments
 # $s0 = base address of operator string
 # $s1 = firstInt
@@ -24,17 +30,10 @@
 # Start of Data Segment
 # All static data is stored here
 	.data
-# Strings
 requestNumber1: 	.asciiz "Enter first number: "
 requestOperator: 	.asciiz "Enter operator: "
 requestNumber2: 	.asciiz "Enter second number: "
 newLine:			.asciiz "\n"
-
-# Ascii Codes for Possible Operators
-addOperator:		.word 0x2b
-subOperator:		.word 0x2d
-mulOperator:		.word 0x2a
-divOperator:		.word 0x2f
 
 operatorBuffer:
 # Align this with the next possible word
@@ -93,6 +92,12 @@ main:
 	# $s1 = firstInt
 	# $s2 = secondInt
 	
+	# Test if operator is add
+	li $t0, 0x2b  # Ascii Code for '+'
+	bne $s0, $t0, skipAdd  # If $s0 != $t0, skip jal
+	jal calcAdd
+skipAdd:
+	
 	# Pull $ra from stack
 	lw $ra, 0($sp)
 	addi $sp, $sp, 4
@@ -131,6 +136,16 @@ printString:
 readString:
 	li $v0, 8
 	syscall
+	
+	# Return
+	jr $ra
+
+# calcAdd function
+# Param: $a0 = a
+# Param: $a1 = b
+# Return $v0 = a + b
+calcAdd:
+	add $v0, $a0, $a1
 	
 	# Return
 	jr $ra
