@@ -27,13 +27,10 @@ main:
 	
 	# Print first request string to console
 	la $a0, requestNumber1
-	li $v0, 4
-	syscall
+	jal printString
 	
-	# Read firstInt from console	
+	# Read firstInt from console into $s0	
 	jal readInt
-	
-	# Put firstInt into $s0
 	move $s0, $v0
 	
 	# Pull $ra from stack
@@ -44,9 +41,23 @@ main:
 	jr $ra
 	
 # Read Int function
+# NOTE: You need to press enter after your integer
+# syscall 5 = read_int
+# Param: None
+# Return: $v0 = integer
 readInt:
-	# syscall 5 = read_int
 	li $v0, 5
+	syscall
+	
+	# Return
+	jr $ra
+	
+# Print String function
+# syscall 4 = print_string
+# Param: $a0 = base address of string
+# Return: None
+printString:
+	li $v0, 4
 	syscall
 	
 	# Return
