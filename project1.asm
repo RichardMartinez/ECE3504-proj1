@@ -34,6 +34,7 @@
 requestNumber1: 	.asciiz "Enter first number: "
 requestOperator: 	.asciiz "Enter operator: "
 requestNumber2: 	.asciiz "Enter second number: "
+displayResult:		.asciiz "Calculated result: "
 newLine:			.asciiz "\n"
 
 operatorBuffer:
@@ -132,12 +133,32 @@ skipMul:
 	jal calcDiv
 	move $s3, $v0
 skipDiv:
+
+	# AT THIS POINT:
+	# $s3 = Result
+	
+	# Display result on screen
+	la $a0, displayResult
+	jal printString
+	move $a0, $s3
+	jal printInt
 	
 	# Pull $ra from stack
 	lw $ra, 0($sp)
 	addi $sp, $sp, 4
 	
 	# Return and exit gracefully
+	jr $ra
+	
+# Print Int function
+# syscall 1 = print_int
+# Param: $a0 = integer
+# Return: None
+printInt:
+	li $v0, 1
+	syscall
+	
+	# Return
 	jr $ra
 	
 # Read Int function
