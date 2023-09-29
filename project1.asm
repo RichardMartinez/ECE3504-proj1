@@ -96,11 +96,22 @@ main:
 	# Test if operator is add
 	li $t0, 0x2b  # Ascii Code for '+'
 	bne $s0, $t0, skipAdd  # If $s0 != $t0, skip jal
+	# At this point, we know the operation is add
 	move $a0, $s1
 	move $a1, $s2
 	jal calcAdd
 	move $s3, $v0
 skipAdd:
+
+	# Test if operator is sub
+	li $t0, 0x2d
+	bne $s0, $t0, skipSub # If $s0 != $t0, skip jal
+	# At this point, we know the operation is sub
+	move $a0, $s1
+	move $a1, $s2
+	jal calcSub
+	move $s3, $v0
+skipSub:
 	
 	# Pull $ra from stack
 	lw $ra, 0($sp)
@@ -150,6 +161,17 @@ readString:
 # Return $v0 = a + b
 calcAdd:
 	add $v0, $a0, $a1
+	
+	# Return
+	jr $ra
+
+# calcSub function
+# Param: $a0 = a
+# Param: $a1 = b
+# Return: $v0 = a - b
+calcSub:
+	# TODO: Should this be subu?
+	sub $v0, $a0, $a1
 	
 	# Return
 	jr $ra
