@@ -25,6 +25,10 @@ requestNumber1: .asciiz "Enter first number: "
 requestOperator: .asciiz "Enter operator: "
 requestNumber2: .asciiz "Enter second number: "
 
+# Allocate one byte of space for the operator char
+# Plus one byte for the null terminator
+operatorBuffer: .space 2
+
 # Start of Text Segment
 	.text
 	.globl main
@@ -47,6 +51,12 @@ main:
 	# Print operator request string to console
 	la $a0, requestOperator
 	jal printString
+	
+	# Read operator char from console
+	la $a0, operatorBuffer	# Where to place return string
+	li $a1, 2				# Size of string
+	jal readString
+	move $s1, $a0
 	
 	# Pull $ra from stack
 	lw $ra, 0($sp)
@@ -73,6 +83,18 @@ readInt:
 # Return: None
 printString:
 	li $v0, 4
+	syscall
+	
+	# Return
+	jr $ra
+	
+# Read String function
+# syscall 8 = read_string
+# Param: $a0 = buffer to place result into
+# Param: $a1 = length of string to read
+# Return: $a0 = base address of string
+readString:
+	li $v0, 8
 	syscall
 	
 	# Return
